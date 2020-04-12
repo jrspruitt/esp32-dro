@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "caliper.h": "c",
+        "spi_slave.h": "c"
+    }
+}
