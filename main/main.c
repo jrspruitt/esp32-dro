@@ -5,31 +5,24 @@
 #include "caliper.h"
 
 
-static void caliper_cb(caliper_handle handle, double value, caliper_units_t units, bool power)
+static void caliper_cb(caliper_handle handle, caliper_data data)
 {
-    if (units == CALIPER_UNITS_MM) {
-        printf("%0.2f mm (%s)\n", value, power ? "on" : "off");
+    if (data->units == CALIPER_UNITS_MM) {
+        printf("%s,%s,%0.2f,mm\n", data->name, data->power ? "on" : "off", data->value);
     } else {
-        printf("%0.4f in (%s)\n", value, power ? "on" : "off");
+        printf("%s,%s,%0.4f,in\n", data->name, data->power ? "on" : "off", data->value);
     }
 }
+
 
 void app_main(void)
 {
     caliper_init();
 
-    caliper_handle handle = caliper_add(18, 23, caliper_cb);
+    caliper_handle handle = caliper_add("X", 18, 23, caliper_cb);
     assert(handle);
 
-    double value;
-    caliper_units_t units;
-    bool power;
-
-    caliper_poll(handle, &value, &units, &power);
-
-    if (units == CALIPER_UNITS_MM) {
-        printf("%0.2f mm (%s)\n", value, power ? "on" : "off");
-    } else {
-        printf("%0.4f in (%s)\n", value, power ? "on" : "off");
-    }
+    struct caliper_data data;
+    caliper_poll(handle, &data);
+    caliper_cb(handle, &data);
 }
